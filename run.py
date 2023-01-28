@@ -85,12 +85,12 @@ def main():
         }
         wandb.log(log)
     
+        state = {
+            'state_dict': model.state_dict(),
+            'optimizer': optim.state_dict(),
+        }
+        torch.save(state, config.save_model_file)
 
-    state = {
-        'state_dict': model.state_dict(),
-        'optimizer': optim.state_dict(),
-    }
-    torch.save(state, config.save_model_file)
 
     test_loss = eval(test_dataloader, model, loss_fn)
     print(f'Test loss: {test_loss}')

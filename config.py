@@ -1,6 +1,6 @@
 
 # Learning parameters
-epochs = 500
+epochs = 5
 batch_size = 64
 learning_rate = 3e-4
 
