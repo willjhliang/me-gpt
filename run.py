@@ -1,6 +1,7 @@
 
 import torch
 from tqdm import tqdm
+import wandb
 
 from dataset import Dataset
 from model import GPT
@@ -46,6 +47,17 @@ def main():
     print(f'Epochs: {config.epochs}')
     print()
 
+    wandb_config = {
+        'epochs': config.epochs,
+        'batch_size': config.batch_size,
+        'learning_rate': config.learning_rate,
+        'window_size': config.window_size,
+        'embed_size': config.embed_size,
+        'num_heads': config.num_heads,
+        'num_blocks': config.num_blocks,
+        'dropout': config.dropout,
+    }
+
     train_dataset = Dataset('dataset/train_small.txt')
     val_dataset = Dataset('dataset/val.txt')
     test_dataset = Dataset('dataset/test.txt')
@@ -59,6 +71,8 @@ def main():
     optim = torch.optim.AdamW(model.parameters(), lr=config.learning_rate)
     loss_fn = torch.nn.CrossEntropyLoss()
 
+    wandb.init(project='me-gpt', entity='willjhliang', config=wandb_config)
+
     for epoch in range(config.epochs):
         print(f'Epoch: {epoch}')
         train_loss = train(train_dataloader, model, optim, loss_fn)
@@ -66,7 +80,13 @@ def main():
         print(f'Train loss: {train_loss}')
         print(f'Validation loss: {val_loss}')
         print()
+        log = {
+            'train_loss': train_loss,
+            'val_loss': val_loss,
+        }
+        wandb.log(log)
     
+
     state = {
         'state_dict': model.state_dict(),
         'optimizer': optim.state_dict(),
