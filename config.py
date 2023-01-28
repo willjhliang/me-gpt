@@ -1,7 +1,7 @@
 
 # Learning parameters
 epochs = 5
-batch_size = 16
+batch_size = 128
 learning_rate = 3e-4
 
 # Run configuration
