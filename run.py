@@ -18,7 +18,7 @@ def train(dataloader, model, optim, loss_fn):
         out = model(x)
         B, T, C = out.shape
         loss = loss_fn(out.view(B*T, C), y.view(B*T))
-        total_loss += loss
+        total_loss += loss.item()
 
         optim.zero_grad()
         loss.backward()
@@ -36,7 +36,7 @@ def eval(dataloader, model, loss_fn):
         x, y = x.to(config.device), y.to(config.device)
         out = model(x)
         B, T, C = out.shape
-        total_loss += loss_fn(out.view(B*T, C), y.view(B*T))
+        total_loss += loss_fn(out.view(B*T, C), y.view(B*T)).item()
 
     model.train()
     return total_loss / len(dataloader)
