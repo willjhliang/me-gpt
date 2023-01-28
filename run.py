@@ -47,20 +47,9 @@ def main():
     print(f'Epochs: {config.epochs}')
     print()
 
-    wandb_config = {
-        'epochs': config.epochs,
-        'batch_size': config.batch_size,
-        'learning_rate': config.learning_rate,
-        'window_size': config.window_size,
-        'embed_size': config.embed_size,
-        'num_heads': config.num_heads,
-        'num_blocks': config.num_blocks,
-        'dropout': config.dropout,
-    }
-
-    train_dataset = Dataset('dataset/train_small.txt')
-    val_dataset = Dataset('dataset/val.txt')
-    test_dataset = Dataset('dataset/test.txt')
+    train_dataset = Dataset('../input/messenger-texts/train.txt')
+    val_dataset = Dataset('../input/messenger-texts/val.txt')
+    test_dataset = Dataset('../input/messenger-texts/test.txt')
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=config.batch_size, shuffle=True)
     val_dataloader = torch.utils.data.DataLoader(val_dataset, batch_size=config.batch_size, shuffle=True)
     test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=config.batch_size, shuffle=True)
@@ -71,7 +60,17 @@ def main():
     optim = torch.optim.AdamW(model.parameters(), lr=config.learning_rate)
     loss_fn = torch.nn.CrossEntropyLoss()
 
-    wandb.init(project='me-gpt', entity='willjhliang', config=wandb_config)
+    wandb.init(project='me-gpt', entity='willjhliang')
+    wandb.config = {
+        'epochs': config.epochs,
+        'batch_size': config.batch_size,
+        'learning_rate': config.learning_rate,
+        'window_size': config.window_size,
+        'embed_size': config.embed_size,
+        'num_heads': config.num_heads,
+        'num_blocks': config.num_blocks,
+        'dropout': config.dropout,
+    }
 
     for epoch in range(config.epochs):
         print(f'Epoch: {epoch}')
