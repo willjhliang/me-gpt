@@ -1,7 +1,7 @@
 
 # Learning parameters
-epochs = 4
-batch_size = 128
+epochs = 3
+batch_size = 256
 learning_rate = 3e-4
 
 # Run configuration
@@ -13,7 +13,7 @@ window_size = 256
 embed_size = 384
 num_heads = 6
 num_blocks = 6
-dropout = 0.3
+dropout = 0.4
 
 # Data globals
 with open('../input/messenger-texts/train.txt', 'r') as f:
