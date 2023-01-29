@@ -1,6 +1,5 @@
 
 import torch
-from tqdm import tqdm
 import wandb
 
 from dataset import Dataset
@@ -9,32 +8,46 @@ from chat import generate
 import config
 
 
-def train(dataloader, model, optim, loss_fn):
-    loop = tqdm(dataloader)
+def train(train_dataloader, val_dataloader, model, optim, loss_fn):
+    loop = train_dataloader
 
-    total_loss = 0
-    for _, (x, y) in enumerate(loop):
+    total_loss, running_loss, running_count = 0, 0, 0
+    for i, (x, y) in enumerate(loop):
         x, y = x.to(config.device), y.to(config.device)
         out = model(x)
         B, T, C = out.shape
         loss = loss_fn(out.view(B*T, C), y.view(B*T))
         total_loss += loss.item()
+        running_loss += loss.item()
+        running_count += 1
 
         optim.zero_grad()
         loss.backward()
         optim.step()
-    
-    return total_loss / len(dataloader)
+
+        if i > 0 and i % (len(train_dataloader) // 10) == 0:  # log 10 times per epoch
+            train_loss = running_loss / running_count
+            val_loss = eval(val_dataloader, model, loss_fn)
+            log = {
+                'train_loss': train_loss,
+                'val_loss': val_loss,
+            }
+            wandb.log(log)
+
+            running_loss, running_count = 0, 0
+
+    return total_loss / len(train_dataloader)
 
 
 def eval(dataloader, model, loss_fn):
-    loop = tqdm(dataloader)
+    loop = dataloader
     model.eval()
 
     total_loss = 0
     for _, (x, y) in enumerate(loop):
         x, y = x.to(config.device), y.to(config.device)
-        out = model(x)
+        with torch.no_grad():
+            out = model(x)
         B, T, C = out.shape
         total_loss += loss_fn(out.view(B*T, C), y.view(B*T)).item()
 
@@ -56,7 +69,7 @@ def main():
 
     print('Created datasets and dataloaders')
 
-    model = GPT(train_dataset.vocab_size).to(config.device)
+    model = GPT(config.vocab_size).to(config.device)
     optim = torch.optim.AdamW(model.parameters(), lr=config.learning_rate)
     loss_fn = torch.nn.CrossEntropyLoss()
 
@@ -74,16 +87,11 @@ def main():
 
     for epoch in range(config.epochs):
         print(f'Epoch: {epoch}')
-        train_loss = train(train_dataloader, model, optim, loss_fn)
+        train_loss = train(train_dataloader, val_dataloader, model, optim, loss_fn)
         val_loss = eval(val_dataloader, model, loss_fn)
         print(f'Train loss: {train_loss}')
         print(f'Validation loss: {val_loss}')
         print()
-        log = {
-            'train_loss': train_loss,
-            'val_loss': val_loss,
-        }
-        wandb.log(log)
     
         state = {
             'state_dict': model.state_dict(),
@@ -96,7 +104,7 @@ def main():
     print(f'Test loss: {test_loss}')
 
     print('Generated text:')
-    print(generate(model, torch.tensor([[train_dataset.stoi['\n']]]).to(config.device), 100).tolist()[0])
+    print(generate(model, torch.tensor([[config.stoi['\n']]]).to(config.device), 100).tolist()[0])
 
 
 if __name__ == '__main__':
