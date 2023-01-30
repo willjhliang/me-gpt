@@ -10,10 +10,10 @@ load_model_file = 'model.pth.tar'
 
 # Model configuration
 window_size = 256
-embed_size = 384
-num_heads = 6
+embed_size = 768
+num_heads = 12
 num_blocks = 6
-dropout = 0.4
+dropout = 0.5
 
 # Data globals
 with open('../input/messenger-texts/train.txt', 'r') as f:
