@@ -1,8 +1,8 @@
 
 # Learning parameters
 epochs = 3
-batch_size = 256
-learning_rate = 3e-4
+batch_size = 32
+learning_rate = 1e-3
 
 # Run configuration
 save_model_file = 'model.pth.tar'
@@ -24,4 +24,4 @@ stoi = {ch: i for i, ch in enumerate(chars)}
 itos = {i: ch for i, ch in enumerate(chars)}
 
 # Misc
-device = 'cuda'
+device = 'cpu'
