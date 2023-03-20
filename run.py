@@ -60,9 +60,9 @@ def main():
     print(f'Epochs: {config.epochs}')
     print()
 
-    train_dataset = Dataset('../input/messenger-texts/train.txt')
-    val_dataset = Dataset('../input/messenger-texts/val.txt')
-    test_dataset = Dataset('../input/messenger-texts/test.txt')
+    train_dataset = Dataset(config.dataset_path + '/train.txt')
+    val_dataset = Dataset(config.dataset_path + '/val.txt')
+    test_dataset = Dataset(config.dataset_path + '/test.txt')
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=config.batch_size, shuffle=True)
     val_dataloader = torch.utils.data.DataLoader(val_dataset, batch_size=config.batch_size, shuffle=True)
     test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=config.batch_size, shuffle=True)

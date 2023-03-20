@@ -1,7 +1,7 @@
 
 # Learning parameters
 epochs = 3
-batch_size = 32
+batch_size = 256
 learning_rate = 1e-3
 
 # Run configuration
@@ -16,7 +16,8 @@ num_blocks = 6
 dropout = 0.5
 
 # Data globals
-with open('../input/messenger-texts/train.txt', 'r') as f:
+dataset_path = '../input/messenger-texts'
+with open(dataset_path + '/train.txt', 'r') as f:
     text = f.read()
 chars = sorted(list(set(text)))
 vocab_size = len(chars)
@@ -24,4 +25,4 @@ stoi = {ch: i for i, ch in enumerate(chars)}
 itos = {i: ch for i, ch in enumerate(chars)}
 
 # Misc
-device = 'cpu'
+device = 'cuda'
